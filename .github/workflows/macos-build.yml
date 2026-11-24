@@ -63,10 +63,10 @@ jobs:
         if: failure()
         run: |
           mkdir -p ci-logs
-          tail -n 400 /tmp/build.log > ci-logs/build.log 2>/dev/null || echo '(no build log captured)' > ci-logs/build.log
+          tail -n 400 /tmp/build.log > ci-logs/build.txt 2>/dev/null || echo '(no build log captured)' > ci-logs/build.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add ci-logs/build.log
+          git add -f ci-logs/build.txt
           if git diff --cached --quiet; then echo 'nothing to publish'; exit 0; fi
           git commit -m 'ci: capture macOS build log'
           git push origin HEAD:macos-build
