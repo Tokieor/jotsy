@@ -8,6 +8,7 @@ on:
     branches: [macos-build]
     paths:
       - '.github/workflows/macos-build.yml'
+      - 'macos/**'
 
 permissions:
   contents: read
