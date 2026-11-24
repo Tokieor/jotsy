@@ -45,7 +45,19 @@ jobs:
         run: flutter pub get
 
       - name: Build macOS release
-        run: flutter build macos --release
+        run: |
+          set -o pipefail
+          flutter build macos --release 2>&1 | tee /tmp/build.log
+
+      - name: Diagnose failure
+        if: failure()
+        run: |
+          {
+            echo '### Build log tail'
+            echo '```'
+            tail -n 250 /tmp/build.log 2>/dev/null || echo '(no build log captured)'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Package dmg and zip
         run: |
