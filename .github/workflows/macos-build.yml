@@ -30,9 +30,15 @@ jobs:
           flutter-version: '3.47.5'   # 与仓库 CI 固定的一致（.github/actions/setup-flutter/action.yml:28）
           cache: true
 
-      # 只有默认 Xcode 版本不够新时才需要：Flutter 对 Xcode 有最低版本要求。
-      # - name: Select Xcode
-      #   run: sudo xcode-select -s /Applications/Xcode_26.3.app
+      # 默认 Xcode 16.4 的 SDK 里没有 video_player_avfoundation 2.12.3 需要的
+      # AVAsset.load(_:isolation:) 新 API，必须切到镜像里预装的 Xcode 26.x。
+      - name: Select Xcode 26
+        run: |
+          ls -d /Applications/Xcode*.app
+          XC="$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+          echo "using $XC"
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
 
       - name: Show toolchain
         run: |
