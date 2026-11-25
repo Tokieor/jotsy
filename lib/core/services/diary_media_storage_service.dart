@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../database/file_embed_codec.dart';
 import 'app_data_directory.dart';
@@ -169,7 +168,7 @@ class DiaryMediaStorageService {
     final path = rawPath?.trim();
     if (path == null || path.isEmpty) return;
     try {
-      final temporary = p.normalize((await getTemporaryDirectory()).path);
+      final temporary = p.normalize((await appTemporaryDirectory()).path);
       final normalized = p.normalize(path);
       for (final name in pickerCacheDirectoryNames) {
         final cacheRoot = p.join(temporary, name);

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../database/app_database.dart';
 import 'diary_media_sweeper.dart';
@@ -37,7 +36,7 @@ class DiaryMediaCleanupService {
     this.gracePeriod = const Duration(hours: 24),
     this.startupDelay = const Duration(seconds: 30),
   }) : _documentsDirectory = documentsDirectory ?? appDataRootDirectory,
-       _temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory,
+       _temporaryDirectory = temporaryDirectory ?? appTemporaryDirectory,
        _clock = clock ?? DateTime.now;
 
   final AppDatabase _database;

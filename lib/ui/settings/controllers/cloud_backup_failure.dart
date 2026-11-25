@@ -44,42 +44,16 @@ String describeCloudBackupFailure(AppLocalizations l10n, Object error) {
         when message.toLowerCase().contains('password') =>
       l10n.cloudBackupErrorPassword,
     FormatException() => l10n.cloudBackupErrorArchive,
-    // 临时诊断：把底层文件错误一起显示，定位完再收回去。
+    // 文件错误把路径与 errno 一并带上：只说“请检查存储空间”会把目录不存在、
+    // 权限不足这类问题误导成磁盘满了。
     FileSystemException(:final message, :final path, :final osError) =>
-      _recordAndDescribe(l10n, error, message, path, osError),
+      _withDetail(l10n.cloudBackupErrorLocalFile, [
+        if (message.isNotEmpty) message,
+        if (path != null && path.isNotEmpty) path,
+        if (osError != null) 'errno ${osError.errorCode} ${osError.message}',
+      ]),
     _ => _withDetail(l10n.cloudBackupErrorUnknown, ['${error.runtimeType}']),
   };
-}
-
-/// 临时诊断：把底层错误写进应用数据目录，便于在机器上直接查看。
-String _recordAndDescribe(
-  AppLocalizations l10n,
-  Object error,
-  String message,
-  String? path,
-  OSError? osError,
-) {
-  try {
-    final home = Platform.environment['HOME'];
-    if (home != null && home.isNotEmpty) {
-      final log = File(
-        '$home/Library/Application Support/com.jotsy.diary/backup_error.log',
-      );
-      log.parent.createSync(recursive: true);
-      log.writeAsStringSync(
-        '${DateTime.now().toIso8601String()} $error\n',
-        mode: FileMode.append,
-        flush: true,
-      );
-    }
-  } on Object {
-    // 诊断写盘失败不影响提示本身。
-  }
-  return _withDetail(l10n.cloudBackupErrorLocalFile, [
-    if (message.isNotEmpty) message,
-    if (path != null && path.isNotEmpty) path,
-    if (osError != null) 'errno ${osError.errorCode} ${osError.message}',
-  ]);
 }
 
 String _withDetail(String head, List<String> details) {

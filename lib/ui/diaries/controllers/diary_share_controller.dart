@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/services/app_platform.dart';
@@ -12,6 +11,8 @@ import '../../../core/services/desktop_save_service.dart';
 import '../../../core/services/diary_share_channel.dart';
 import '../../../core/services/image_export_service.dart';
 import '../models/diary_share_target.dart';
+
+import '../../../core/services/app_data_directory.dart';
 
 typedef DiaryShareClipboardWriter = Future<void> Function(String text);
 typedef DiarySystemShare =
@@ -93,7 +94,7 @@ class DiaryShareController {
   DiaryShareController({
     this._channel = const DiaryShareChannel(),
     this._imageService = const ImageExportService(),
-    this._cacheDirectory = getTemporaryDirectory,
+    this._cacheDirectory = appTemporaryDirectory,
     this._desktopSaver = const DesktopSaveService(),
     DiaryShareClipboardWriter? writeClipboard,
     DiarySystemShare? systemShare,

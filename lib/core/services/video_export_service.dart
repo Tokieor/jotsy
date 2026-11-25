@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:gal/gal.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import 'desktop_save_service.dart';
+import 'app_data_directory.dart';
 
 enum VideoExportFailure {
   missingFile,
@@ -60,7 +60,7 @@ class VideoExportService {
         );
       }
       downloaded = await Directory(
-        (await getTemporaryDirectory()).path,
+        (await appTemporaryDirectory()).path,
       ).createTemp('jotsy_video_export_');
       final file = await _download(uri, downloaded);
       return await _desktopSaver.saveFile(
@@ -107,7 +107,7 @@ class VideoExportService {
       }
       if (remote) {
         downloaded = await Directory(
-          (await getTemporaryDirectory()).path,
+          (await appTemporaryDirectory()).path,
         ).createTemp('jotsy_video_export_');
         file = await _download(uri, downloaded);
       }

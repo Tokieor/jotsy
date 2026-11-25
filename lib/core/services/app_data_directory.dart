@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'app_platform.dart';
@@ -25,4 +26,25 @@ Future<Directory> appDataRootDirectory() async {
   final directory = await getApplicationSupportDirectory();
   await directory.create(recursive: true);
   return directory;
+}
+
+/// 临时目录，保证目录本身已经存在。
+///
+/// macOS 上 `getTemporaryDirectory()` 给的是 `~/Library/Caches/<bundle id>`，
+/// 这个目录**不会**被自动创建；`Directory.createTemp` 只建自己那一层、不建父
+/// 目录，于是第一次导出 / 备份就会 `PathNotFoundException ... errno = 2`。
+/// 沙盒内的 App Store 构建由容器预先建好，所以作者本机没暴露这个问题。
+///
+/// 取不到时退到应用数据目录下的 `tmp/`，至少让导出、备份能继续。
+Future<Directory> appTemporaryDirectory() async {
+  try {
+    final directory = await getTemporaryDirectory();
+    await directory.create(recursive: true);
+    return directory;
+  } on FileSystemException {
+    final root = await appDataRootDirectory();
+    final fallback = Directory(p.join(root.path, 'tmp'));
+    await fallback.create(recursive: true);
+    return fallback;
+  }
 }

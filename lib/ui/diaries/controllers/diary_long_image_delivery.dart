@@ -2,13 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/services/desktop_save_service.dart';
 import '../../../core/services/image_export_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/image_export_messages.dart';
+
+import '../../../core/services/app_data_directory.dart';
 
 /// 分享长图生成后的去处。
 enum DiaryLongImageDestination {
@@ -66,7 +67,7 @@ class DiaryLongImageDelivery {
           return imageExportErrorMessage(l10n, error);
         }
       case DiaryLongImageDestination.share:
-        final directory = await getTemporaryDirectory();
+        final directory = await appTemporaryDirectory();
         final file = File(p.join(directory.path, '$name.png'));
         await file.writeAsBytes(bytes, flush: true);
         await Share.shareXFiles(<XFile>[XFile(file.path)]);

@@ -4,7 +4,6 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show TextDirection;
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/database/app_database.dart';
@@ -25,6 +24,8 @@ import '../export/diary_export_media.dart';
 import '../export/diary_export_naming.dart';
 import '../export/diary_export_pdf.dart';
 import '../export/diary_export_text.dart';
+
+import '../../../core/services/app_data_directory.dart';
 
 typedef DiaryExportFileSaver =
     Future<String?> Function({
@@ -101,7 +102,7 @@ class DiaryExportController {
     DiaryExportMediaLibrary Function()? createMediaLibrary,
     Future<DiaryExportFont?> Function()? loadBodyFont,
     this._loadFonts = DiaryPdfFonts.load,
-    this._cacheDirectory = getTemporaryDirectory,
+    this._cacheDirectory = appTemporaryDirectory,
     this._now = DateTime.now,
     this._saveFile = BackupFileSaveService.saveFile,
     DiaryExportFileSharer? shareFile,

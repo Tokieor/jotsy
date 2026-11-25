@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'app_data_directory.dart';
 
 /// Owns pending microphone files and recordings committed to diary documents.
@@ -14,7 +13,7 @@ class DiaryAudioStorageService {
 
   Future<String> createPendingPath() async {
     final directory = Directory(
-      p.join((await getTemporaryDirectory()).path, _pendingDirectoryName),
+      p.join((await appTemporaryDirectory()).path, _pendingDirectoryName),
     );
     await directory.create(recursive: true);
     return p.join(
@@ -41,7 +40,7 @@ class DiaryAudioStorageService {
   Future<void> deletePendingRecording(String? path) async {
     if (path == null) return;
     final root = p.join(
-      (await getTemporaryDirectory()).path,
+      (await appTemporaryDirectory()).path,
       _pendingDirectoryName,
     );
     await _deleteWithin(root, path);

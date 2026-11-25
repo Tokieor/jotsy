@@ -3,12 +3,12 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import 'app_update_download_progress.dart';
 import 'app_update_http.dart';
 import 'app_update_models.dart';
 import 'app_update_sources.dart';
+import 'app_data_directory.dart';
 
 export 'app_update_download_progress.dart' show AppUpdateDownloadProgress;
 
@@ -38,7 +38,7 @@ class AppUpdateDownloader {
     this.lowSpeedBytesPerSecond = 24 << 10,
     this.progressInterval = const Duration(milliseconds: 250),
   }) : _http = http ?? AppUpdateHttp(),
-       _cacheDirectory = cacheDirectory ?? getTemporaryDirectory;
+       _cacheDirectory = cacheDirectory ?? appTemporaryDirectory;
 
   static const String directoryName = 'app_update';
 

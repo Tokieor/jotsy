@@ -11,19 +11,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/services/backup_file_save_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../home/widgets/home_hint_visibility_scope.dart';
 import '../viewmodels/ai_chat_export.dart';
+import '../../../core/services/app_data_directory.dart';
 
 const String _stagingDirectory = 'ai_chat_export';
 
 Future<File> _stage(String text, String fileName) async {
   final root = Directory(
-    p.join((await getTemporaryDirectory()).path, _stagingDirectory),
+    p.join((await appTemporaryDirectory()).path, _stagingDirectory),
   );
   if (await root.exists()) {
     try {

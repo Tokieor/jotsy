@@ -7,7 +7,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
@@ -35,6 +34,7 @@ import '../viewmodels/mind_map_look.dart';
 import '../widgets/mind_map_painter.dart';
 import 'mind_map_editing_controller.dart';
 import 'mind_map_outline_export.dart';
+import '../../../core/services/app_data_directory.dart';
 
 /// 导图的导出与导入流程。
 ///
@@ -292,7 +292,7 @@ Future<void> copyMindMapOutline(
 
 Future<File> _stage(Uint8List bytes, String fileName) async {
   final root = Directory(
-    p.join((await getTemporaryDirectory()).path, _stagingDirectory),
+    p.join((await appTemporaryDirectory()).path, _stagingDirectory),
   );
   if (await root.exists()) {
     try {

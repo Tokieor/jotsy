@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'app_data_directory.dart';
 
 /// 长图的一段分片：原图中 [top] 起、高 [height] 像素的整宽区域。
 @immutable
@@ -91,14 +91,14 @@ class LongImageTileService {
     Future<Directory> Function()? cacheDirectory,
     bool? supported,
   }) : _channel = channel ?? const MethodChannel(channelName),
-       _cacheDirectory = cacheDirectory ?? getTemporaryDirectory,
+       _cacheDirectory = cacheDirectory ?? appTemporaryDirectory,
        _supported =
            supported ??
            (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
 
   static const String channelName = 'com.jotsy.diary/long_image';
 
-  /// 缓存根目录名（位于 `getTemporaryDirectory()` 下）。
+  /// 缓存根目录名（位于 `appTemporaryDirectory()` 下）。
   static const String directoryName = 'diary_image_tiles';
 
   /// 清单文件名；原生侧最后写出，存在即表示该目录完整。

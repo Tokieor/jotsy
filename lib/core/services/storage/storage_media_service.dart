@@ -60,7 +60,7 @@ class StorageMediaService {
   }) : compressor = compressor ?? createPlatformMediaCompressor(),
        _registry = registry ?? EditingSessionRegistry.instance,
        _dataRoot = dataRoot ?? appDataRootDirectory,
-       _temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory,
+       _temporaryDirectory = temporaryDirectory ?? appTemporaryDirectory,
        _fontsPath = fontsPath ?? _defaultFontsPath,
        _clock = clock ?? DateTime.now;
 

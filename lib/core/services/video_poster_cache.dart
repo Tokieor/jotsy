@@ -4,9 +4,9 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import 'storage/media_compressor.dart';
+import 'app_data_directory.dart';
 
 /// 视频的封面帧（一帧 JPEG）：正文里的视频小图与存储管理的缩略图共用这一份
 /// 生成与缓存（#252）。
@@ -26,7 +26,7 @@ class VideoPosterCache {
     MediaCompressor? compressor,
     Future<Directory> Function()? temporaryDirectory,
   }) : compressor = compressor ?? createPlatformMediaCompressor(),
-       _temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory;
+       _temporaryDirectory = temporaryDirectory ?? appTemporaryDirectory;
 
   /// 应用内共用的实例（正文视频小图）；存储管理带着自己的压缩器另建一个，
   /// 磁盘缓存仍是同一个目录。

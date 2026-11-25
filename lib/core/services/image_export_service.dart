@@ -5,9 +5,9 @@ import 'dart:typed_data';
 import 'package:gal/gal.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import 'desktop_save_service.dart';
+import 'app_data_directory.dart';
 
 /// 图片导出失败的语义分类。
 ///
@@ -50,7 +50,7 @@ class ImageExportException implements Exception {
 /// - 输出：把该图片保存到系统相册（桌面没有相册，改经 [saveToFile] /
 ///   [saveBytesToFile] 弹出“另存为…”对话框）；网络图片经
 ///   [downloadRemoteImage] 落成本地文件，供分享链路（`DiaryShareController`）暂存后交给目标应用；
-/// - 副作用：网络图片会先流式下载到应用临时目录（[getTemporaryDirectory]）再处理，
+/// - 副作用：网络图片会先流式下载到应用临时目录（[appTemporaryDirectory]）再处理，
 ///   短时间重复保存/分享同一 URL 会复用仍存在的临时文件；过期缓存会被清理；
 /// - 不负责：UI 提示、loading 态、权限弹窗时机（仅触发 [Gal.requestAccess]）。
 ///
@@ -336,7 +336,7 @@ class ImageExportService {
         );
       }
 
-      final tempDir = await getTemporaryDirectory();
+      final tempDir = await appTemporaryDirectory();
       final extension = _guessExtension(uri.path, contentType: contentType);
       final fileName =
           'jotsy_image_${DateTime.now().microsecondsSinceEpoch}$extension';

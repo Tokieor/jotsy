@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:drift/drift.dart' show countAll;
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../database/app_database.dart';
 import 'backup_archive_io.dart';
@@ -62,7 +61,7 @@ class DataArchiveService {
     SettingsService settingsService,
     String? password,
   ) async {
-    final temporary = await getTemporaryDirectory();
+    final temporary = await appTemporaryDirectory();
     final working = await temporary.createTemp('backup_export_');
     try {
       final payload = await BackupPayload.capture(
@@ -117,7 +116,7 @@ class DataArchiveService {
     Iterable<String> diaryIds,
     String? password,
   ) async {
-    final temporary = await getTemporaryDirectory();
+    final temporary = await appTemporaryDirectory();
     final working = await temporary.createTemp('diary_export_');
     try {
       final captured = await BackupPayload.captureDiaries(
@@ -178,7 +177,7 @@ class DataArchiveService {
     if (!await File(zipPath).exists()) {
       throw const FileSystemException('备份文件不存在');
     }
-    final working = await (await getTemporaryDirectory()).createTemp(
+    final working = await (await appTemporaryDirectory()).createTemp(
       'backup_inspect_',
     );
     try {

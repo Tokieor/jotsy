@@ -61,7 +61,7 @@ extension _CalendarYearActions on _CalendarPageController {
         }
         return;
       }
-      final directory = await getTemporaryDirectory();
+      final directory = await appTemporaryDirectory();
       final file = File(p.join(directory.path, 'jotsy_year_$year.png'));
       await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
       await Share.shareXFiles(<XFile>[XFile(file.path)]);

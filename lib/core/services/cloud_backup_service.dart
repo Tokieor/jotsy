@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../database/app_database.dart';
 import 'app_data_directory.dart';
@@ -53,7 +52,7 @@ class CloudBackupService {
     this._autoUploadLimit = CloudIncrementalBackup.defaultAutoUploadLimit,
   }) : _drives = drives ?? defaultCloudDriveProviders(),
        _httpFactory = httpFactory ?? CloudBackupHttp.new,
-       _temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory,
+       _temporaryDirectory = temporaryDirectory ?? appTemporaryDirectory,
        _dataRoot = dataRoot ?? appDataRootDirectory,
        _sleep = sleep ?? Future<void>.delayed,
        _clock = clock ?? DateTime.now;
