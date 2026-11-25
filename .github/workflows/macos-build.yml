@@ -9,6 +9,11 @@ on:
     paths:
       - '.github/workflows/macos-build.yml'
       - 'macos/**'
+      # Dart 代码与资源也要重新打包，否则改了 lib/ 不会触发构建。
+      - 'lib/**'
+      - 'assets/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
 
 permissions:
   contents: write
