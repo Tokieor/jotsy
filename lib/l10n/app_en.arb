@@ -165,6 +165,17 @@
   "@settingsFontScaleSubtitle": {
     "description": "Subtitle for font size setting in settings."
   },
+  "settingsFontWeight": "Font weight",
+  "@settingsFontWeight": {
+    "description": "Settings title for the UI font weight option."
+  },
+  "settingsFontWeightSubtitle": "Adjust how heavy the interface text looks",
+  "@settingsFontWeightSubtitle": {
+    "description": "Settings subtitle for the UI font weight option."
+  },
+  "settingsFontWeightLighter": "Lighter",
+  "settingsFontWeightStandard": "Standard",
+  "settingsFontWeightBolder": "Bolder",
   "settingsFontScalePreview": "Preview: A short diary line for sizing.",
   "@settingsFontScalePreview": {
     "description": "Preview text shown in font scale dialog."

@@ -318,6 +318,36 @@ abstract class AppLocalizations {
   /// **'Preview: A short diary line for sizing.'**
   String get settingsFontScalePreview;
 
+  /// Title for font weight setting in settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Font weight'**
+  String get settingsFontWeight;
+
+  /// Subtitle for font weight setting in settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust how heavy the interface text looks'**
+  String get settingsFontWeightSubtitle;
+
+  /// Lighter font weight option.
+  ///
+  /// In en, this message translates to:
+  /// **'Lighter'**
+  String get settingsFontWeightLighter;
+
+  /// Standard font weight option.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get settingsFontWeightStandard;
+
+  /// Bolder font weight option.
+  ///
+  /// In en, this message translates to:
+  /// **'Bolder'**
+  String get settingsFontWeightBolder;
+
   /// Title for configuring how many tags are shown on each diary card.
   ///
   /// In en, this message translates to:

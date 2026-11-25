@@ -165,6 +165,17 @@
   "@settingsFontScaleSubtitle": {
     "description": "设置页字体大小设置项副标题。"
   },
+  "settingsFontWeight": "字重",
+  "@settingsFontWeight": {
+    "description": "设置页界面字重设置项标题。"
+  },
+  "settingsFontWeightSubtitle": "调整界面文字的粗细",
+  "@settingsFontWeightSubtitle": {
+    "description": "设置页界面字重设置项副标题。"
+  },
+  "settingsFontWeightLighter": "较细",
+  "settingsFontWeightStandard": "标准",
+  "settingsFontWeightBolder": "较粗",
   "settingsFontScalePreview": "预览文字：今天也记下了一点生活。",
   "@settingsFontScalePreview": {
     "description": "字体大小弹窗中的预览文案。"

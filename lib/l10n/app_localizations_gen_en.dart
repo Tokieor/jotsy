@@ -129,6 +129,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsFontScalePreview =>
+  @override
+  String get settingsFontWeight => 'Font weight';
+
+  @override
+  String get settingsFontWeightSubtitle => 'Adjust how heavy the interface text looks';
+
+  @override
+  String get settingsFontWeightLighter => 'Lighter';
+
+  @override
+  String get settingsFontWeightStandard => 'Standard';
+
+  @override
+  String get settingsFontWeightBolder => 'Bolder';
+
       'Preview: A short diary line for sizing.';
 
   @override

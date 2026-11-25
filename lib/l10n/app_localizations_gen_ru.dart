@@ -138,6 +138,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsFontScalePreview =>
+  @override
+  String get settingsFontWeight => 'Насыщенность шрифта';
+
+  @override
+  String get settingsFontWeightSubtitle => 'Насколько жирным выглядит текст интерфейса';
+
+  @override
+  String get settingsFontWeightLighter => 'Тоньше';
+
+  @override
+  String get settingsFontWeightStandard => 'Обычная';
+
+  @override
+  String get settingsFontWeightBolder => 'Жирнее';
+
       'Пример: ещё один день, ещё пара строк о жизни.';
 
   @override

@@ -78,6 +78,7 @@ class _NodeDiaryAppState extends ConsumerState<NodeDiaryApp> {
 
   Color? _cachedThemeSeedColor;
   AppFonts? _cachedThemeFonts;
+  int? _cachedThemeWeightShift;
   (ThemeData, ThemeData)? _cachedThemes;
 
   /// 减少动画时去掉动效的主题，按 MaterialApp 给的基础主题记住。
@@ -270,13 +271,25 @@ class _NodeDiaryAppState extends ConsumerState<NodeDiaryApp> {
                               double fontScale,
                               Widget? child,
                             ) {
-                              return _buildAppShell(
-                                home: home,
-                                themeMode: themeMode,
-                                locale: locale,
-                                themeSeedColor: themeSeedColor,
-                                fontScale: fontScale,
-                                fonts: fonts,
+                              return ValueListenableBuilder<int>(
+                                valueListenable:
+                                    settingsService.fontWeightShiftNotifier,
+                                builder:
+                                    (
+                                      BuildContext context,
+                                      int fontWeightShift,
+                                      Widget? child,
+                                    ) {
+                                      return _buildAppShell(
+                                        home: home,
+                                        themeMode: themeMode,
+                                        locale: locale,
+                                        themeSeedColor: themeSeedColor,
+                                        fontScale: fontScale,
+                                        fontWeightShift: fontWeightShift,
+                                        fonts: fonts,
+                                      );
+                                    },
                               );
                             },
                       );
@@ -296,19 +309,35 @@ class _NodeDiaryAppState extends ConsumerState<NodeDiaryApp> {
   /// `ColorScheme.fromSeed` 需要做 HCT 色调板计算，ThemeData 组装也不便宜；
   /// 字号、语言、主题模式变化都会重建应用壳，但只有种子色或字体变化才需要
   /// 重算主题。
-  (ThemeData, ThemeData) _themesFor(Color seedColor, AppFonts fonts) {
+  (ThemeData, ThemeData) _themesFor(
+    Color seedColor,
+    AppFonts fonts,
+    int fontWeightShift,
+  ) {
     final cached = _cachedThemes;
     if (cached != null &&
         _cachedThemeSeedColor == seedColor &&
-        _cachedThemeFonts == fonts) {
+        _cachedThemeFonts == fonts &&
+        _cachedThemeWeightShift == fontWeightShift) {
       return cached;
     }
     final themes = (
-      buildSeededAppTheme(seedColor, Brightness.light, fonts: fonts),
-      buildSeededAppTheme(seedColor, Brightness.dark, fonts: fonts),
+      buildSeededAppTheme(
+        seedColor,
+        Brightness.light,
+        fonts: fonts,
+        fontWeightShift: fontWeightShift,
+      ),
+      buildSeededAppTheme(
+        seedColor,
+        Brightness.dark,
+        fonts: fonts,
+        fontWeightShift: fontWeightShift,
+      ),
     );
     _cachedThemeSeedColor = seedColor;
     _cachedThemeFonts = fonts;
+    _cachedThemeWeightShift = fontWeightShift;
     _cachedThemes = themes;
     return themes;
   }
@@ -321,14 +350,22 @@ class _NodeDiaryAppState extends ConsumerState<NodeDiaryApp> {
       SettingsService.defaultThemeSeedColorValue,
     ),
     double fontScale = SettingsService.defaultFontScale,
+    int fontWeightShift = SettingsService.defaultFontWeightShift,
     AppFonts fonts = const AppFonts(),
   }) {
     // 字体无法插值：过渡里 TextStyle 的字族要到一半才换，旧字体多留半程、
     // 再整体重排一次（启动时正好落在首页揭幕的头几帧）。所以字体变化的这一次
     // 直接换主题，明暗、主题色的切换照旧过渡。按缓存比较而不是记在字段里：
     // 之后只换颜色的重建不受影响。
-    final fontsChanged = _cachedThemes != null && _cachedThemeFonts != fonts;
-    final (lightTheme, darkTheme) = _themesFor(themeSeedColor, fonts);
+    final fontsChanged =
+        _cachedThemes != null &&
+        (_cachedThemeFonts != fonts ||
+            _cachedThemeWeightShift != fontWeightShift);
+    final (lightTheme, darkTheme) = _themesFor(
+      themeSeedColor,
+      fonts,
+      fontWeightShift,
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // Android 拉伸越界时不让滚动内容里的玻璃失去背景模糊，见 AppScrollBehavior。

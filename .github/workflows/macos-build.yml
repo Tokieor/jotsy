@@ -62,6 +62,11 @@ jobs:
           test -d "$APP"
           echo "Impeller: $(/usr/libexec/PlistBuddy -c 'Print :FLTEnableImpeller' "$APP/Contents/Info.plist")"
           echo "MinOS:    $(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$APP/Contents/Info.plist")"
+          # 只出 x86_64：ARCHS 在 macos/Runner.xcodeproj 里写死，防止 runner 默认
+          # 编成 universal 把包体翻倍。
+          ARCHS="$(lipo -archs "$APP/Contents/MacOS/Jotsy")"
+          echo "Archs:    $ARCHS"
+          test "$ARCHS" = "x86_64"
 
       - name: Diagnose failure
         if: failure()

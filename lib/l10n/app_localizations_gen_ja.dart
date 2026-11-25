@@ -125,6 +125,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsFontScalePreview => 'プレビュー：今日も暮らしのひとコマを書き留めました。';
+  @override
+  String get settingsFontWeight => '文字の太さ';
+
+  @override
+  String get settingsFontWeightSubtitle => '画面の文字の太さを調整';
+
+  @override
+  String get settingsFontWeightLighter => '細め';
+
+  @override
+  String get settingsFontWeightStandard => '標準';
+
+  @override
+  String get settingsFontWeightBolder => '太め';
+
 
   @override
   String get settingsDiaryCardTagLimit => '日記カードのタグ';

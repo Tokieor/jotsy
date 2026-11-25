@@ -97,6 +97,22 @@ class SettingsThemeSection extends StatelessWidget {
                                       selectedScale: fontScale,
                                       onChanged: settingsService.setFontScale,
                                     ),
+                                    ValueListenableBuilder<int>(
+                                      valueListenable: settingsService
+                                          .fontWeightShiftNotifier,
+                                      builder:
+                                          (
+                                            BuildContext context,
+                                            int weightShift,
+                                            Widget? child,
+                                          ) {
+                                            return _FontWeightSelector(
+                                              shift: weightShift,
+                                              onChanged: settingsService
+                                                  .setFontWeightShift,
+                                            );
+                                          },
+                                    ),
                                   ],
                                 ),
                               ],
@@ -288,6 +304,90 @@ class _FontScaleSelector extends StatelessWidget {
         ],
       ),
       onTap: () => _showFontScaleDialog(context),
+    );
+  }
+}
+
+/// 界面字重：整份字阶按档位位移（见 [shiftTextThemeWeights]），不改变层级。
+class _FontWeightSelector extends StatelessWidget {
+  const _FontWeightSelector({required this.shift, required this.onChanged});
+
+  final int shift;
+  final ValueChanged<int> onChanged;
+
+  String _label(AppLocalizations l10n, int value) {
+    if (value < SettingsService.defaultFontWeightShift) {
+      return l10n.settingsFontWeightLighter;
+    }
+    if (value > SettingsService.defaultFontWeightShift) {
+      return l10n.settingsFontWeightBolder;
+    }
+    return l10n.settingsFontWeightStandard;
+  }
+
+  Future<void> _showWeightDialog(BuildContext context) async {
+    await showAppDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        final l10n = dialogContext.l10n;
+        return AlertDialog(
+          title: Text(l10n.settingsFontWeight),
+          content: ExpressiveButtonGroup<int>(
+            selected: <int>{shift},
+            onSelectionChanged: (Set<int> selection) {
+              final next = selection.firstOrNull;
+              if (next != null) {
+                onChanged(next);
+                Navigator.of(dialogContext).pop();
+              }
+            },
+            segments: <ButtonSegment<int>>[
+              ButtonSegment<int>(
+                value: SettingsService.minFontWeightShift,
+                label: Text(l10n.settingsFontWeightLighter),
+              ),
+              ButtonSegment<int>(
+                value: SettingsService.defaultFontWeightShift,
+                label: Text(l10n.settingsFontWeightStandard),
+              ),
+              ButtonSegment<int>(
+                value: SettingsService.maxFontWeightShift,
+                label: Text(l10n.settingsFontWeightBolder),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(MaterialLocalizations.of(dialogContext).closeButtonLabel),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      title: Text(l10n.settingsFontWeight),
+      subtitle: Text(l10n.settingsFontWeightSubtitle),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            _label(l10n, shift),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const FaIcon(FontAwesomeIcons.angleRight, size: 14),
+        ],
+      ),
+      onTap: () => _showWeightDialog(context),
     );
   }
 }

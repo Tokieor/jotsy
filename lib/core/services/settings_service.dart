@@ -16,9 +16,18 @@ const String _defaultDiaryToolbarCurrentTimeFormat = 'M月d日 HH:mm';
 class SettingsService {
   static const int defaultThemeSeedColorValue = 0xFF1E6586;
   static const double defaultFontScale = 1.0;
-  static const double minFontScale = 0.85;
+  static const double minFontScale = 0.70;
   static const double maxFontScale = 1.25;
   static const double fontScaleStep = 0.05;
+
+  /// 界面字重档位：相对 Material 字阶整体位移的级数，-1 较细、0 标准、+1 较粗。
+  ///
+  /// 只位移不覆盖：标题仍比正文重，层级不会被抹平；内置 HarmonyOS Sans SC
+  /// 只有 400 / 500 / 700 三个字面，位移一档后由 Flutter 取最接近的字面
+  /// （700 → 500、400 → 400），看起来就是“整页轻了一点”。
+  static const int defaultFontWeightShift = 0;
+  static const int minFontWeightShift = -1;
+  static const int maxFontWeightShift = 1;
   static const int defaultDiaryCardTagLimit = 2;
   static const int minDiaryCardTagLimit = 0;
   static const int maxDiaryCardTagLimit = 20;
@@ -42,6 +51,7 @@ class SettingsService {
     required Color themeSeedColor,
     required DiaryTypography diaryTypography,
     required double fontScale,
+    required int fontWeightShift,
     required Locale locale,
     required bool appLockEnabled,
     required bool tagFilterMemoryEnabled,
@@ -76,6 +86,7 @@ class SettingsService {
          diaryTypography,
        ),
        fontScaleNotifier = ValueNotifier<double>(fontScale),
+       fontWeightShiftNotifier = ValueNotifier<int>(fontWeightShift),
        localeNotifier = ValueNotifier<Locale>(locale),
        appLockEnabledNotifier = ValueNotifier<bool>(appLockEnabled),
        tagFilterMemoryEnabledNotifier = ValueNotifier<bool>(
@@ -138,6 +149,7 @@ class SettingsService {
   /// 日记正文排版（编辑 / 预览 / 发布三处共用）。
   final ValueNotifier<DiaryTypography> diaryTypographyNotifier;
   final ValueNotifier<double> fontScaleNotifier;
+  final ValueNotifier<int> fontWeightShiftNotifier;
   final ValueNotifier<Locale> localeNotifier;
   final ValueNotifier<bool> appLockEnabledNotifier;
   final ValueNotifier<bool> tagFilterMemoryEnabledNotifier;
@@ -256,6 +268,7 @@ class SettingsService {
   static const _keyLegacyEditorBodyLineHeightPreset =
       'app.settings.editor_body_line_height_preset';
   static const _keyFontScale = 'app.settings.font_scale';
+  static const _keyFontWeightShift = 'app.settings.font_weight_shift';
   static const _keyDiarySortMode = 'app.settings.diary_sort_mode';
   static const _keyDiaryLayoutMode = 'app.settings.diary_layout_mode';
   static const _keyDiaryToolbarOrder = 'app.settings.diary_toolbar_order';
@@ -342,6 +355,16 @@ class SettingsService {
     if (!prefs.containsKey(_keyFontScale)) {
       await prefs.setDouble(_keyFontScale, fontScale);
     }
+    final storedFontWeightShift = prefs.get(_keyFontWeightShift);
+    final fontWeightShift = _normalizeFontWeightShift(
+      storedFontWeightShift is int
+          ? storedFontWeightShift
+          : defaultFontWeightShift,
+    );
+    if (storedFontWeightShift is! int ||
+        storedFontWeightShift != fontWeightShift) {
+      await prefs.setInt(_keyFontWeightShift, fontWeightShift);
+    }
     if (prefs.containsKey(_keyLegacyReleaseMirrorStartIndex)) {
       await prefs.remove(_keyLegacyReleaseMirrorStartIndex);
     }
@@ -395,6 +418,7 @@ class SettingsService {
       themeSeedColor: Color(themeSeedColorValue),
       diaryTypography: diaryTypography,
       fontScale: fontScale,
+      fontWeightShift: fontWeightShift,
       locale: _localeFromCode(localeCode),
       appLockEnabled: appLockEnabled,
       tagFilterMemoryEnabled: tagFilterMemoryEnabled,
@@ -477,6 +501,12 @@ class SettingsService {
     final normalized = _normalizeFontScale(scale);
     fontScaleNotifier.value = normalized;
     await _writePreference(_prefs.setDouble(_keyFontScale, normalized));
+  }
+
+  Future<void> setFontWeightShift(int shift) async {
+    final normalized = _normalizeFontWeightShift(shift);
+    fontWeightShiftNotifier.value = normalized;
+    await _writePreference(_prefs.setInt(_keyFontWeightShift, normalized));
   }
 
   String get diarySortModeRaw =>
@@ -969,6 +999,7 @@ class SettingsService {
   int get themeSeedColorValue => themeSeedColorNotifier.value.toARGB32();
   DiaryTypography get diaryTypography => diaryTypographyNotifier.value;
   double get fontScaleValue => fontScaleNotifier.value;
+  int get fontWeightShiftValue => fontWeightShiftNotifier.value;
 
   Future<void> setAppLocale(Locale locale) async {
     await setAppLocaleCode(_codeFromLocale(locale));
@@ -1135,6 +1166,10 @@ class SettingsService {
 
   static double _normalizeFontScale(double raw) {
     return raw.clamp(minFontScale, maxFontScale).toDouble();
+  }
+
+  static int _normalizeFontWeightShift(int raw) {
+    return raw.clamp(minFontWeightShift, maxFontWeightShift).toInt();
   }
 
   static int _normalizeDiaryCardTagLimit(int value) {

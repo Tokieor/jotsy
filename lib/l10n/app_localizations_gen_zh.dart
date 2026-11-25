@@ -125,6 +125,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsFontScalePreview => '预览文字：今天也记下了一点生活。';
+  @override
+  String get settingsFontWeight => '字重';
+
+  @override
+  String get settingsFontWeightSubtitle => '调整界面文字的粗细';
+
+  @override
+  String get settingsFontWeightLighter => '较细';
+
+  @override
+  String get settingsFontWeightStandard => '标准';
+
+  @override
+  String get settingsFontWeightBolder => '较粗';
+
 
   @override
   String get settingsDiaryCardTagLimit => '日记卡片标签';

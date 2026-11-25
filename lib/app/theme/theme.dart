@@ -22,12 +22,14 @@ ThemeData buildSeededAppTheme(
   Brightness brightness, {
   DynamicSchemeVariant variant = DynamicSchemeVariant.tonalSpot,
   AppFonts fonts = const AppFonts(),
+  int fontWeightShift = 0,
 }) {
   return MaterialTheme(
     brightness == Brightness.light
         ? Typography.material2021().black
         : Typography.material2021().white,
     fonts: fonts,
+    weightShift: fontWeightShift,
   ).theme(appColorSchemeFromSeed(seedColor, brightness, variant: variant));
 }
 
@@ -63,6 +65,34 @@ class NoPredictiveBackPageTransitionsBuilder
   DelegatedTransitionBuilder? get delegatedTransition => null;
 }
 
+/// 把整份字阶的字重按 [delta] 级位移：+1 更粗、-1 更细、0 原样。
+///
+/// 只位移不覆盖，标题仍重于正文，层级保持不变；具体落到哪个字面由字体文件
+/// 决定（内置 HarmonyOS Sans SC 只有 400 / 500 / 700）。
+TextTheme shiftTextThemeWeights(TextTheme base, int delta) {
+  if (delta == 0) {
+    return base;
+  }
+  TextStyle? shift(TextStyle? style) => style?.apply(fontWeightDelta: delta);
+  return TextTheme(
+    displayLarge: shift(base.displayLarge),
+    displayMedium: shift(base.displayMedium),
+    displaySmall: shift(base.displaySmall),
+    headlineLarge: shift(base.headlineLarge),
+    headlineMedium: shift(base.headlineMedium),
+    headlineSmall: shift(base.headlineSmall),
+    titleLarge: shift(base.titleLarge),
+    titleMedium: shift(base.titleMedium),
+    titleSmall: shift(base.titleSmall),
+    bodyLarge: shift(base.bodyLarge),
+    bodyMedium: shift(base.bodyMedium),
+    bodySmall: shift(base.bodySmall),
+    labelLarge: shift(base.labelLarge),
+    labelMedium: shift(base.labelMedium),
+    labelSmall: shift(base.labelSmall),
+  );
+}
+
 /// 应用 Material 3 Expressive 主题装配器。
 ///
 /// 职责：
@@ -75,7 +105,14 @@ class MaterialTheme {
   /// 界面字体与日记字体；随主题以 [ThemeExtension] 往下传（[AppFonts.of]）。
   final AppFonts fonts;
 
-  const MaterialTheme(this.textTheme, {this.fonts = const AppFonts()});
+  /// 界面字重档位：整份字阶按级数位移，见 [shiftTextThemeWeights]。
+  final int weightShift;
+
+  const MaterialTheme(
+    this.textTheme, {
+    this.fonts = const AppFonts(),
+    this.weightShift = 0,
+  });
 
   static ColorScheme lightScheme() => MaterialThemeSchemes.lightScheme;
   ThemeData light() => theme(lightScheme());
@@ -152,7 +189,9 @@ class MaterialTheme {
     );
     return ExpressiveSurfaces.apply(
       ExpressiveControls.apply(
-        baseTheme.copyWith(textTheme: emphasizedTextTheme),
+        baseTheme.copyWith(
+          textTheme: shiftTextThemeWeights(emphasizedTextTheme, weightShift),
+        ),
       ),
     );
   }
