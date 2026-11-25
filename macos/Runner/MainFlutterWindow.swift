@@ -11,7 +11,7 @@ class MainFlutterWindow: NSWindow {
     // 下次启动时自动恢复（Flutter 的 macOS 模板默认不做这件事）。
     _ = self.setFrameAutosaveName("JotsyMainWindow")
     // 缩到很小时窗口不能被压扁到看不见内容，给一个下限。
-    self.minSize = NSSize(width: 480, height: 360)
+    self.minSize = NSSize(width: 360, height: 280)
 
     RegisterGeneratedPlugins(registry: flutterViewController)
 
