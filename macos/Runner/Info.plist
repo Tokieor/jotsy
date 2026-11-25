@@ -22,6 +22,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<!-- 该机器的 Metal 驱动（黑苹果上的 NVMTLDriver）跑 Impeller 明显掉帧，
+	     退回 Skia 后操作跟手。Skia 同样走 Metal，只是渲染管线不同。 -->
+	<key>FLTEnableImpeller</key>
+	<false/>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>

@@ -55,6 +55,14 @@ jobs:
           set -o pipefail
           flutter build macos --release 2>&1 | tee /tmp/build.log
 
+      - name: Verify renderer settings
+        run: |
+          set -euo pipefail
+          APP="build/macos/Build/Products/Release/Jotsy.app"
+          test -d "$APP"
+          echo "Impeller: $(/usr/libexec/PlistBuddy -c 'Print :FLTEnableImpeller' "$APP/Contents/Info.plist")"
+          echo "MinOS:    $(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$APP/Contents/Info.plist")"
+
       - name: Diagnose failure
         if: failure()
         run: |
