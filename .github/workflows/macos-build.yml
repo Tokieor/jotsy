@@ -100,8 +100,19 @@ jobs:
           set -euo pipefail
           APP="build/macos/Build/Products/Release/Jotsy.app"
           test -d "$APP"
-          # 工程里已是 ad-hoc 签名（project.pbxproj:450 CODE_SIGN_IDENTITY = "-"），这里再签一次兜底。
-          codesign --force --deep --sign - "$APP"
+          # 工程里已是 ad-hoc 签名（project.pbxproj:450 CODE_SIGN_IDENTITY = "-"），
+          # 但那条签名带的是 Release.entitlements（含 app-sandbox），重新签一次换成
+          # AdHoc.entitlements：不开沙盒（数据仍留在 ~/Library/Application Support），
+          # 但要带上 file_picker 另存为要求的 User Selected Files 读写权限。
+          codesign --force --deep --sign - \
+            --entitlements macos/Runner/AdHoc.entitlements "$APP"
+          codesign --verify --deep --strict "$APP"
+          ENTITLEMENTS="$(codesign -d --entitlements :- "$APP" 2>/dev/null || true)"
+          echo "$ENTITLEMENTS"
+          if ! grep -q 'files.user-selected.read-write' <<<"$ENTITLEMENTS"; then
+            echo '签名缺少 com.apple.security.files.user-selected.read-write，导出/另存为会报 ENTITLEMENT_REQUIRED_WRITE' >&2
+            exit 1
+          fi
           VERSION="$(grep -m1 '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)"
           hdiutil create -volname "Jotsy" -srcfolder "$APP" -ov -format UDZO \
             "Jotsy-${VERSION}-macos-x64.dmg"

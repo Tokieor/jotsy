@@ -65,32 +65,25 @@ class NoPredictiveBackPageTransitionsBuilder
   DelegatedTransitionBuilder? get delegatedTransition => null;
 }
 
-/// 把整份字阶的字重按 [delta] 级位移：+1 更粗、-1 更细、0 原样。
+/// 字重档位对应的界面字族。
 ///
-/// 只位移不覆盖，标题仍重于正文，层级保持不变；具体落到哪个字面由字体文件
-/// 决定（内置 HarmonyOS Sans SC 只有 400 / 500 / 700）。
-TextTheme shiftTextThemeWeights(TextTheme base, int delta) {
-  if (delta == 0) {
-    return base;
+/// 内置 HarmonyOS Sans SC 只有 Regular / Medium / Bold 三个字面，位移
+/// [FontWeight] 取不到更细或更粗的笔画（700→800、400→300 都没有文件，渲染
+/// 结果与原档位一模一样）。所以按档位换字族：`pubspec.yaml` 里用同一批字体
+/// 文件另标注了两套字面映射，[kAppLightFontFamily] 整体轻一档（正文 Regular、
+/// 标题 Medium），[kAppHeavyFontFamily] 整体重一档（正文 Medium、标题 Bold），
+/// 标题依旧重于正文。用户另选了界面字体时以用户字体为准，档位不生效。
+String interfaceFontFamilyFor(AppFonts fonts, int weightShift) {
+  if (fonts.interface != null) {
+    return fonts.interface!;
   }
-  TextStyle? shift(TextStyle? style) => style?.apply(fontWeightDelta: delta);
-  return TextTheme(
-    displayLarge: shift(base.displayLarge),
-    displayMedium: shift(base.displayMedium),
-    displaySmall: shift(base.displaySmall),
-    headlineLarge: shift(base.headlineLarge),
-    headlineMedium: shift(base.headlineMedium),
-    headlineSmall: shift(base.headlineSmall),
-    titleLarge: shift(base.titleLarge),
-    titleMedium: shift(base.titleMedium),
-    titleSmall: shift(base.titleSmall),
-    bodyLarge: shift(base.bodyLarge),
-    bodyMedium: shift(base.bodyMedium),
-    bodySmall: shift(base.bodySmall),
-    labelLarge: shift(base.labelLarge),
-    labelMedium: shift(base.labelMedium),
-    labelSmall: shift(base.labelSmall),
-  );
+  if (weightShift < 0) {
+    return kAppLightFontFamily;
+  }
+  if (weightShift > 0) {
+    return kAppHeavyFontFamily;
+  }
+  return kAppBundledFontFamily;
 }
 
 /// 应用 Material 3 Expressive 主题装配器。
@@ -105,7 +98,8 @@ class MaterialTheme {
   /// 界面字体与日记字体；随主题以 [ThemeExtension] 往下传（[AppFonts.of]）。
   final AppFonts fonts;
 
-  /// 界面字重档位：整份字阶按级数位移，见 [shiftTextThemeWeights]。
+  /// 界面字重档位：-1 较细、0 标准、+1 较粗，按档位换界面字族，
+  /// 见 [interfaceFontFamilyFor]。
   final int weightShift;
 
   const MaterialTheme(
@@ -143,7 +137,7 @@ class MaterialTheme {
     // 开启“字体用于整个界面”时整份字阶换成用户的字体；不额外指定回退字体：
     // 缺字（如西文导入字体里的汉字、Android 系统字体的中文）交给系统回退链，
     // 与日记正文同一口径，系统字体在中文上仍显示厂商字体。
-    final fontFamily = fonts.interface ?? kAppBundledFontFamily;
+    final fontFamily = interfaceFontFamilyFor(fonts, weightShift);
     final baseTheme = ThemeData(
       useMaterial3: true,
       fontFamily: fontFamily,
@@ -189,9 +183,7 @@ class MaterialTheme {
     );
     return ExpressiveSurfaces.apply(
       ExpressiveControls.apply(
-        baseTheme.copyWith(
-          textTheme: shiftTextThemeWeights(emphasizedTextTheme, weightShift),
-        ),
+        baseTheme.copyWith(textTheme: emphasizedTextTheme),
       ),
     );
   }

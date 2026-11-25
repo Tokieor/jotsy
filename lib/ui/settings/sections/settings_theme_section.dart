@@ -308,7 +308,7 @@ class _FontScaleSelector extends StatelessWidget {
   }
 }
 
-/// 界面字重：整份字阶按档位位移（见 [shiftTextThemeWeights]），不改变层级。
+/// 界面字重：按档位换整套字面映射（见 `interfaceFontFamilyFor`），标题仍重于正文。
 class _FontWeightSelector extends StatelessWidget {
   const _FontWeightSelector({required this.shift, required this.onChanged});
 

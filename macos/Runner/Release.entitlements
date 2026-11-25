@@ -4,6 +4,10 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
+	<!-- 导出、备份、另存为都走 file_picker 的 NSSavePanel；沙盒应用缺这条会直接
+	     抛 ENTITLEMENT_REQUIRED_WRITE（FilePickerPlugin.checkEntitlement）。 -->
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
 	<key>com.apple.security.network.server</key>

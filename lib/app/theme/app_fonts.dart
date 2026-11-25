@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 /// 应用内置字体（HarmonyOS Sans SC）的字族名，见 `pubspec.yaml`。
 const String kAppBundledFontFamily = 'HarmonyOSSansSC';
 
+/// 内置字体的“较细”档字族：同一批字体文件、整体轻一档的字面映射。
+const String kAppLightFontFamily = 'HarmonyOSSansSCLight';
+
+/// 内置字体的“较粗”档字族：同一批字体文件、整体重一档的字面映射。
+const String kAppHeavyFontFamily = 'HarmonyOSSansSCHeavy';
+
 /// 主题携带的字体选择：界面字体与日记内容字体。
 ///
 /// 输入：用户在“正文字体与排版”里选的字体及“用于整个界面”开关（由

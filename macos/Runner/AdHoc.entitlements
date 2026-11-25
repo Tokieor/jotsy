@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  自签名（ad-hoc）分发用：不开 App Sandbox，数据仍然放在
+	  ~/Library/Application Support/<bundle id>/，与用户已有的数据目录一致。
+
+	  但 file_picker 的 macOS 实现在“另存为”前会用 SecTaskCopyValueForEntitlement
+	  检查签名里有没有 User Selected Files 读写权限，缺了就抛
+	  ENTITLEMENT_REQUIRED_WRITE，所以这条必须写进签名（见
+	  FilePickerPlugin.swift 的 checkEntitlement）。
+	-->
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+</dict>
+</plist>

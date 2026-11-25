@@ -134,6 +134,23 @@ flutter:
           weight: 500
         - asset: assets/fonts/harmonyos_sans_sc/HarmonyOS_Sans_SC_Bold.ttf
           weight: 700
+    # 界面字重档位用的两套字面映射：内置字体只有 Regular / Medium / Bold 三个
+    # 字面，直接位移 FontWeight 取不到更细或更粗的笔画（700→800、400→300 都
+    # 没有对应文件，渲染结果和原档位一样）。所以按档位换字族，用同一批字体文件
+    # 重新标注字重：整份界面在“较细”下用 Regular / Medium 组合，在“较粗”下用
+    # Medium / Bold 组合，标题仍然重于正文。
+    - family: HarmonyOSSansSCLight
+      fonts:
+        - asset: assets/fonts/harmonyos_sans_sc/HarmonyOS_Sans_SC_Regular.ttf
+          weight: 400
+        - asset: assets/fonts/harmonyos_sans_sc/HarmonyOS_Sans_SC_Medium.ttf
+          weight: 700
+    - family: HarmonyOSSansSCHeavy
+      fonts:
+        - asset: assets/fonts/harmonyos_sans_sc/HarmonyOS_Sans_SC_Medium.ttf
+          weight: 400
+        - asset: assets/fonts/harmonyos_sans_sc/HarmonyOS_Sans_SC_Bold.ttf
+          weight: 700
 
 flutter_launcher_icons:
   android: true
