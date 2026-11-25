@@ -1210,11 +1210,17 @@ class _EditDiaryPageState extends ConsumerState<EditDiaryPage>
     final caretSelection = caret == null
         ? null
         : editor.DiaryEditorController.collapsedSelectionAt(document, caret);
+    // 打开即编辑：光标放在正文末尾接着写（原来落在首块开头，续写还得先按
+    // End）。从预览页双击进来仍以双击处为准，回到前台重载时不动光标。
+    final tailSelection = caretSelection == null && !reload
+        ? editor.DiaryEditorController.collapsedSelectionAtEnd(document)
+        : null;
     _controller.replaceContentController(
       editor.DiaryEditorController(
         document: document,
         selection:
             caretSelection ??
+            tailSelection ??
             editor.Selection.single(path: [0], startOffset: 0),
         linkSource: _linkSource,
       ),

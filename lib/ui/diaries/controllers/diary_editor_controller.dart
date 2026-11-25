@@ -64,6 +64,32 @@ class DiaryEditorController extends ChangeNotifier {
     linkSource: linkSource,
   );
 
+  /// 正文末尾的插入点：文档里最后一个文字块的行尾（含折叠块里的子块）。
+  ///
+  /// “打开即编辑”时用它把光标放在末尾接着写，而不是回到开头。文档里没有
+  /// 文字块时返回 null，调用方回落到首块开头。
+  static af.Selection? collapsedSelectionAtEnd(af.Document document) {
+    af.Node? last;
+    void visit(af.Node node) {
+      if (node.delta != null) last = node;
+      for (final child in node.children) {
+        visit(child);
+      }
+    }
+
+    for (final node in document.root.children) {
+      visit(node);
+    }
+    final tail = last;
+    final delta = tail?.delta;
+    if (tail == null || delta == null) {
+      return null;
+    }
+    return af.Selection.collapsed(
+      af.Position(path: tail.path, offset: delta.length),
+    );
+  }
+
   /// 在 [document] 里放在 [caret] 处的插入点：位置所指的块不存在或不是文字块
   /// 时为 null，偏移按块的文字长度夹取。用于从别处带来的位置（预览页双击
   /// 处）——那份文档与这里可能略有出入（预览里刚勾了待办还没写回）。
